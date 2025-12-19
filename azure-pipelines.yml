@@ -1,0 +1,35 @@
+trigger: none
+
+pool: AgentPool
+
+stages:
+- stage: InitPlanValidate
+  displayName: Terraform InitPlanValidate
+  jobs: 
+  - job: InitPlanValidate
+    steps: 
+
+    - task: TerraformInstaller@1
+      displayName: TerraformInstaller
+      inputs:
+        terraformVersion: '1.12.2'
+
+    - task: TerraformTaskV4@4
+      displayName: TerraformInit
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/environments/dev'
+        backendServiceArm: 'todo-connection'
+        backendAzureRmResourceGroupName: 'rg-todobackend'
+        backendAzureRmStorageAccountName: 'todostorage19'
+        backendAzureRmContainerName: 'todocon'
+        backendAzureRmKey: 'dev.terraform.tfstate'
+
+    - task: TerraformTaskV4@4
+      displayName: TerraformPlan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/environments/dev'
+        environmentServiceNameAzureRM: 'todo-connection'
